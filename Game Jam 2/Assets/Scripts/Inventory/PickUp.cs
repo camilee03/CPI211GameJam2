@@ -27,8 +27,8 @@ public class PickUp : MonoBehaviour
         // Shows the pickedup object in hand
         if (!canPickup)
         {
-            pickedupObject.transform.position = transform.position + 
-                Camera.main.transform.forward * 1 + Vector3.up * 1 + Camera.main.transform.right * 1;
+            pickedupObject.transform.position = Camera.main.transform.position + 
+                Camera.main.transform.forward * 2 + Camera.main.transform.right * 1;
             pickedupObject.transform.rotation = Camera.main.transform.rotation;
         }
     }
@@ -47,7 +47,7 @@ public class PickUp : MonoBehaviour
     private void Place()
     {
         if (pickedupObject != null) {
-            pickedupObject.transform.position = transform.position + Camera.main.transform.forward * 3 + Vector3.up * 2;
+            pickedupObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 3;
             pickedupObject.transform.localScale *= 1.2f;
             pickedupObject = null;
             canPickup = true;
