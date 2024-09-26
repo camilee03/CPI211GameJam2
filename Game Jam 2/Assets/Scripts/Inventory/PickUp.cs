@@ -20,7 +20,7 @@ public class PickUp : MonoBehaviour
         HitScan();
         if (Input.GetMouseButtonDown(0))
         {
-            if (canPickup) { Pickup(); }
+            if (canPickup && highlightedObject != null) { Pickup(); }
             else { Place(); }
         }
 
@@ -39,11 +39,9 @@ public class PickUp : MonoBehaviour
         if (canPickup)
         {
             canPickup = false;
-            if (highlightedObject != null) {
-                pickedupObject = highlightedObject;
-                pickedupObject.transform.localScale /= 1.2f;
-                highlightedObject = null;
-            }
+            pickedupObject = highlightedObject;
+            pickedupObject.transform.localScale /= 1.2f;
+            highlightedObject = null;
         }
     }
     private void Place()
