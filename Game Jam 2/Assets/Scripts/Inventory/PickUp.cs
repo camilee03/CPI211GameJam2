@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PickUp : MonoBehaviour
 {
     [Header("HitScan Variables")]
     bool canPickup = true; // false if holding something already
+    bool isRunning; // checks to see if coroutine is running
 
 
     [Header("Highlight Variables")]
@@ -15,6 +19,9 @@ public class PickUp : MonoBehaviour
     private GameObject highlightedObject;
     private GameObject pickedupObject;
 
+    [Header("Interactable Variables")]
+    [SerializeField] TextMeshProUGUI popupText;
+    [SerializeField] GameObject popupMenu;
     private void Update()
     {
         HitScan();
@@ -36,7 +43,7 @@ public class PickUp : MonoBehaviour
     private void Pickup()
     {
         // Picks up highlighted object
-        if (canPickup)
+        if (canPickup && highlightedObject.tag == "Selectable")
         {
             canPickup = false;
             pickedupObject = highlightedObject;
@@ -53,17 +60,20 @@ public class PickUp : MonoBehaviour
             canPickup = true;
         }
     }
-
     void HitScan()
     {
         // Finds objects that will be hit by raycast
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.5f));
         RaycastHit hit;
 
+        //-- Highlights objects to be picked up -- //
         if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Selectable" && hit.distance < 3)
         {
             Debug.Log("hit scanned something" + hit.collider.gameObject);
             ToggleHighlight(hit.collider.gameObject);
+
+            popupText.text = "Right click to pick up";
+            if (!isRunning) { StartCoroutine(FadeMenu()); }
         }
         else if (highlightedObject != null && highlightedObject != pickedupObject)
         {
@@ -73,19 +83,69 @@ public class PickUp : MonoBehaviour
             }
             highlightedObject = null;
         }
+
+
+        //-- Highlights objects to be interacted with --//
+        if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Interactable" && hit.distance < 5)
+        {
+            ToggleHighlight(hit.collider.gameObject);
+
+            popupText.text = "Press E to interact";
+            if (!isRunning) { StartCoroutine(FadeMenu()); }
+        }
     }
 
-    public void ToggleHighlight(GameObject gameObject)
+    public void ToggleHighlight(GameObject newObject)
     {
         // Highlights the raycast object
-        materials = gameObject.GetComponent<Renderer>().materials.ToList();
+        materials = newObject.GetComponent<Renderer>().materials.ToList();
 
         foreach (var material in materials)
         {
             material.EnableKeyword("_EMISSION");
             material.SetColor("_EmissionColor", highlightColor);
         }
-        highlightedObject = gameObject;
+
+        highlightedObject = newObject; // stores highlighted object.
     }
 
+    IEnumerator FadeMenu()
+    {
+        Image fader = popupMenu.GetComponent<Image>();
+        float transparencyMenu;
+        float transparencyText;
+        float transition;
+        float max = 0.5f;
+        float min = 0;
+        isRunning = true;
+
+        if (fader.color.a == 0) // fade in
+        {
+            transparencyMenu = 0;
+            transparencyText = 0;
+            transition = .01f;
+        }
+        else // fade out
+        {
+            transparencyMenu = .48f;
+            transparencyText = .96f;
+            transition = -.01f;
+        }
+
+        // Fades the menu and text out or in
+        while (transparencyMenu >= min && transparencyMenu <= max)
+        {
+            transparencyMenu += transition;
+            transparencyText += transition * 2;
+            fader.color = new Color(fader.color.r, fader.color.g, fader.color.b, transparencyMenu);
+            popupText.color = new Color(255, 0, 0, transparencyText);
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        yield return new WaitForSeconds(5);
+
+        if (transition == .01f) {  StartCoroutine(FadeMenu()); }
+        else { isRunning = false; fader.color = new Color(fader.color.r, fader.color.g, fader.color.b, 0); }
+    }
 }
