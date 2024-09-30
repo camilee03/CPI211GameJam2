@@ -14,6 +14,7 @@ public class DemonManager : MonoBehaviour
     public DemonMovement DemonMovement; //we'll update the .target when the last known position changes
     public Transform actualPlayerLocation;
     public Transform lastKnownPosition;
+    [SerializeField] Globals globals;
     [SerializeField] GameObject demonPointsParent;
     private List<GameObject> demonPoints = new List<GameObject>();
     [SerializeField] GameObject hiddenPointsParent;
@@ -32,11 +33,19 @@ public class DemonManager : MonoBehaviour
     private bool lockedOn = false;
     private bool wandering = true; //wandering behavior modeled off of Lethal Company (Jester Enemy)
     //Demon will wander between demonPoints, clearing off nearby ones untill all are checked, and then reset them
-    //it will of course focus the player if they are seen
     private List<GameObject> wanderPointsLeft = new List<GameObject>();
     private GameObject wanderTarget;
     void Start()
     {
+        if (globals == null)
+        {
+            globals = GameObject.FindGameObjectWithTag("Globals").GetComponent<Globals>();
+            if (globals == null)
+            {
+                Debug.Log("Demon Manager failed to find globals, make sure it exists and is tagged");
+            }
+        }
+
         //get the DemonMovement so we can control it in future
         demonTransform = GetChildWithTag(transform, "Demon");
 
@@ -52,7 +61,6 @@ public class DemonManager : MonoBehaviour
         foreach (Transform demonPoint in demonPointsParent.transform)
 
         {
-            Debug.Log("added gameobject" + demonPoint.gameObject.name);
             demonPoints.Add(demonPoint.gameObject);
             wanderPointsLeft.Add(demonPoint.gameObject);
         }
@@ -139,9 +147,9 @@ public class DemonManager : MonoBehaviour
         Vector3 directionToTarget = target.position - curPosition.position;
         float distanceToTarget = directionToTarget.magnitude;
         if (distanceToTarget <= arrivedRadius)
-        return false;
-        else
         return true;
+        else
+        return false;
     }
 
     List<GameObject> findNearbyGameObjects(Transform centralPosition, float radius, List<GameObject> demonPoints, out List<GameObject> nearbyPoints)
@@ -163,7 +171,7 @@ public class DemonManager : MonoBehaviour
 
     GameObject findNearestGameObjectOnList(Transform origin, List<GameObject> gameObjects)
     {
-        GameObject closest = null;
+        GameObject closest = gameObjects[0];
         foreach (GameObject obj in gameObjects)
         {
             float distance = Vector3.Distance(origin.position, obj.transform.position);
@@ -219,7 +227,7 @@ public class DemonManager : MonoBehaviour
                         resetWanderPointsLeft();
                     }
                     wandering = false;
-                    //Debug.Log("Updating target position");
+                    Debug.Log("Found player - Updating target position");
                 }    
             }
             else
@@ -230,6 +238,7 @@ public class DemonManager : MonoBehaviour
                 if (!wandering)
                 {
                     pickFirstWanderTarget();
+                    Debug.Log("Lost sight of player, begin wandering/searching");
                 }
                 else
                 {
@@ -241,6 +250,7 @@ public class DemonManager : MonoBehaviour
                     if(arrivedAt(demonTransform, wanderTarget.transform, demonCatchRange))
                     {
                         //remove the found target
+                        Debug.Log("Arrived at wander target: " + wanderTarget.gameObject.name);
                         wanderPointsLeft.Remove(wanderTarget);
 
                         //remove nearby points so we don't check points unnecessarily
@@ -262,6 +272,7 @@ public class DemonManager : MonoBehaviour
                             //select a new wanderTarget
                             GameObject newTarget = findNearestGameObjectOnList(wanderTarget.transform, wanderPointsLeft);
                             wanderTarget = newTarget;
+                            Debug.Log("Selecting new wander target: " + wanderTarget.gameObject.name);
                             DemonMovement.target = wanderTarget.transform;
                         }
                     }
@@ -286,6 +297,9 @@ public class DemonManager : MonoBehaviour
             if ((canSee || inSenseRange) && !hidden)
             {
                 lastKnownPosition.position = actualPlayerLocation.position;
+                if (distanceToPlayer <= demonCatchRange) {
+                    globals.playerCaught();
+                }
             }
             else //if the demon can't see or sense the player, it'll lose the lock and begin wandering
             {
