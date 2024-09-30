@@ -14,6 +14,7 @@ public class DemonManager : MonoBehaviour
     public DemonMovement DemonMovement; //we'll update the .target when the last known position changes
     public Transform actualPlayerLocation;
     public Transform lastKnownPosition;
+    [SerializeField] Globals globals;
     [SerializeField] GameObject demonPointsParent;
     private List<GameObject> demonPoints = new List<GameObject>();
     [SerializeField] GameObject hiddenPointsParent;
@@ -32,11 +33,19 @@ public class DemonManager : MonoBehaviour
     private bool lockedOn = false;
     private bool wandering = true; //wandering behavior modeled off of Lethal Company (Jester Enemy)
     //Demon will wander between demonPoints, clearing off nearby ones untill all are checked, and then reset them
-    //it will of course focus the player if they are seen
     private List<GameObject> wanderPointsLeft = new List<GameObject>();
     private GameObject wanderTarget;
     void Start()
     {
+        if (globals == null)
+        {
+            globals = GameObject.FindGameObjectWithTag("Globals").GetComponent<Globals>();
+            if (globals == null)
+            {
+                Debug.Log("Demon Manager failed to find globals, make sure it exists and is tagged");
+            }
+        }
+
         //get the DemonMovement so we can control it in future
         demonTransform = GetChildWithTag(transform, "Demon");
 
@@ -288,6 +297,9 @@ public class DemonManager : MonoBehaviour
             if ((canSee || inSenseRange) && !hidden)
             {
                 lastKnownPosition.position = actualPlayerLocation.position;
+                if (distanceToPlayer <= demonCatchRange) {
+                    globals.playerCaught();
+                }
             }
             else //if the demon can't see or sense the player, it'll lose the lock and begin wandering
             {
