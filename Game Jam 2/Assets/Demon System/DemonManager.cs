@@ -52,7 +52,6 @@ public class DemonManager : MonoBehaviour
         foreach (Transform demonPoint in demonPointsParent.transform)
 
         {
-            Debug.Log("added gameobject" + demonPoint.gameObject.name);
             demonPoints.Add(demonPoint.gameObject);
             wanderPointsLeft.Add(demonPoint.gameObject);
         }
@@ -139,9 +138,9 @@ public class DemonManager : MonoBehaviour
         Vector3 directionToTarget = target.position - curPosition.position;
         float distanceToTarget = directionToTarget.magnitude;
         if (distanceToTarget <= arrivedRadius)
-        return false;
-        else
         return true;
+        else
+        return false;
     }
 
     List<GameObject> findNearbyGameObjects(Transform centralPosition, float radius, List<GameObject> demonPoints, out List<GameObject> nearbyPoints)
@@ -163,7 +162,7 @@ public class DemonManager : MonoBehaviour
 
     GameObject findNearestGameObjectOnList(Transform origin, List<GameObject> gameObjects)
     {
-        GameObject closest = null;
+        GameObject closest = gameObjects[0];
         foreach (GameObject obj in gameObjects)
         {
             float distance = Vector3.Distance(origin.position, obj.transform.position);
@@ -219,7 +218,7 @@ public class DemonManager : MonoBehaviour
                         resetWanderPointsLeft();
                     }
                     wandering = false;
-                    //Debug.Log("Updating target position");
+                    Debug.Log("Found player - Updating target position");
                 }    
             }
             else
@@ -230,6 +229,7 @@ public class DemonManager : MonoBehaviour
                 if (!wandering)
                 {
                     pickFirstWanderTarget();
+                    Debug.Log("Lost sight of player, begin wandering/searching");
                 }
                 else
                 {
@@ -241,6 +241,7 @@ public class DemonManager : MonoBehaviour
                     if(arrivedAt(demonTransform, wanderTarget.transform, demonCatchRange))
                     {
                         //remove the found target
+                        Debug.Log("Arrived at wander target: " + wanderTarget.gameObject.name);
                         wanderPointsLeft.Remove(wanderTarget);
 
                         //remove nearby points so we don't check points unnecessarily
@@ -262,6 +263,7 @@ public class DemonManager : MonoBehaviour
                             //select a new wanderTarget
                             GameObject newTarget = findNearestGameObjectOnList(wanderTarget.transform, wanderPointsLeft);
                             wanderTarget = newTarget;
+                            Debug.Log("Selecting new wander target: " + wanderTarget.gameObject.name);
                             DemonMovement.target = wanderTarget.transform;
                         }
                     }
