@@ -12,16 +12,19 @@ public class PickUp : MonoBehaviour
     bool canPickup = true; // false if holding something already
     bool isRunning; // checks to see if coroutine is running
 
-
     [Header("Highlight Variables")]
     private Color highlightColor = Color.grey;
     private List<Material> materials;
-    private GameObject highlightedObject;
+    public GameObject highlightedObject;
     private GameObject pickedupObject;
 
     [Header("Interactable Variables")]
     [SerializeField] TextMeshProUGUI popupText;
     [SerializeField] GameObject popupMenu;
+
+    [Header("Door Variables")]
+    Animator doorAnimator;
+    bool canChange = true;
     private void Update()
     {
         HitScan();
@@ -37,6 +40,18 @@ public class PickUp : MonoBehaviour
             pickedupObject.transform.position = Camera.main.transform.position + 
                 Camera.main.transform.forward * 2 + Camera.main.transform.right * 1;
             pickedupObject.transform.rotation = Camera.main.transform.rotation;
+        }
+
+        // Interacts with objects
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (highlightedObject.tag == "Door" && canChange)
+            {
+                doorAnimator = highlightedObject.GetComponentInParent<Animator>();
+
+                doorAnimator.SetBool("isOpen", !doorAnimator.GetBool("isOpen"));
+                StartCoroutine(WaitForAnimation());
+            }
         }
     }
 
@@ -85,8 +100,8 @@ public class PickUp : MonoBehaviour
         }
 
 
-        //-- Highlights objects to be interacted with --//
-        if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Interactable" && hit.distance < 5)
+        //-- Highlights doors --//
+        if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Door" && hit.distance < 5)
         {
             ToggleHighlight(hit.collider.gameObject);
 
@@ -147,5 +162,12 @@ public class PickUp : MonoBehaviour
 
         if (transition == .01f) {  StartCoroutine(FadeMenu()); }
         else { isRunning = false; fader.color = new Color(fader.color.r, fader.color.g, fader.color.b, 0); }
+    }
+
+    IEnumerator WaitForAnimation()
+    {
+        canChange = false;
+        yield return new WaitForSeconds(3);
+        canChange = true;
     }
 }
