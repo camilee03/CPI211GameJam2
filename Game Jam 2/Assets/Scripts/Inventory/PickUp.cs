@@ -15,7 +15,7 @@ public class PickUp : MonoBehaviour
     [Header("Highlight Variables")]
     private Color highlightColor = Color.grey;
     private List<Material> materials;
-    public GameObject highlightedObject;
+    private  GameObject highlightedObject;
     private GameObject pickedupObject;
 
     [Header("Interactable Variables")]
@@ -24,6 +24,12 @@ public class PickUp : MonoBehaviour
 
     [Header("Door Variables")]
     Animator doorAnimator;
+
+    [Header("Sound")]
+    [SerializeField] AudioSource close;
+    [SerializeField] AudioSource open;
+
+
     bool canChange = true;
     private void Update()
     {
@@ -48,6 +54,9 @@ public class PickUp : MonoBehaviour
             if (highlightedObject.tag == "Door" && canChange)
             {
                 doorAnimator = highlightedObject.GetComponentInParent<Animator>();
+
+                if (doorAnimator.GetBool("isOpen")) { open.Play(); }
+                else { close.Play(); }
 
                 doorAnimator.SetBool("isOpen", !doorAnimator.GetBool("isOpen"));
                 StartCoroutine(WaitForAnimation());
