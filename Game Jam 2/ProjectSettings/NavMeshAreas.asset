@@ -94,7 +94,11 @@ NavMeshProjectSettings:
     agentRadius: 0.3
     agentHeight: 1
     agentSlope: 45
+<<<<<<< HEAD
     agentClimb: 0.75
+=======
+    agentClimb: 0.1
+>>>>>>> Mechanics-Branch
     ledgeDropHeight: 0
     maxJumpAcrossDistance: 0
     minRegionArea: 2
@@ -109,4 +113,8 @@ NavMeshProjectSettings:
       m_Flags: 0
   m_SettingNames:
   - Humanoid
+<<<<<<< HEAD
   - Demonoid
+=======
+  - Ghost
+>>>>>>> Mechanics-Branch
