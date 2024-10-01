@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Demon System/SamDemonHouse.unity
     guid: 5ace73c03076a5c44807182daa561aec
+  - enabled: 1
+    path: Assets/ScenesDavid/WinScene.unity
+    guid: 9599759e8d38f324dba58bb9fbde07b6
   m_configObjects: {}
