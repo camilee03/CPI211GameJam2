@@ -34,7 +34,7 @@ public class PickUp : MonoBehaviour
     private void Update()
     {
         HitScan();
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             if (canPickup && highlightedObject != null) { Pickup(); }
             else { Place(); }
