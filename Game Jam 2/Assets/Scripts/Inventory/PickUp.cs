@@ -71,7 +71,6 @@ public class PickUp : MonoBehaviour
         {
             canPickup = false;
             pickedupObject = highlightedObject;
-            pickedupObject.transform.localScale /= 1.2f;
             highlightedObject = null;
         }
     }
@@ -79,7 +78,6 @@ public class PickUp : MonoBehaviour
     {
         if (pickedupObject != null) {
             pickedupObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 3;
-            pickedupObject.transform.localScale *= 1.2f;
             pickedupObject = null;
             canPickup = true;
         }
