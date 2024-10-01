@@ -33,7 +33,7 @@ public class PickUp : MonoBehaviour
     private void Update()
     {
         HitScan();
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(0))
         {
             if (canPickup && highlightedObject != null) { Pickup(); }
             else { Place(); }
@@ -42,8 +42,7 @@ public class PickUp : MonoBehaviour
         // Shows the pickedup object in hand
         if (!canPickup)
         {
-            pickedupObject.transform.position = Camera.main.transform.position + 
-                Camera.main.transform.forward * 1 + Camera.main.transform.right * 1;
+            pickedupObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 0.8f + Camera.main.transform.right * 0.5f;
             pickedupObject.transform.rotation = Camera.main.transform.rotation;
         }
 
@@ -76,7 +75,7 @@ public class PickUp : MonoBehaviour
     private void Place()
     {
         if (pickedupObject != null) {
-            pickedupObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 3;
+            pickedupObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward + Camera.main.transform.up * 0.3f;
             pickedupObject = null;
             canPickup = true;
         }
@@ -93,7 +92,7 @@ public class PickUp : MonoBehaviour
             Debug.Log("hit scanned something" + hit.collider.gameObject);
             ToggleHighlight(hit.collider.gameObject);
 
-            popupText.text = "Right click to pick up";
+            popupText.text = "Left click to pick up";
             if (!isRunning) { StartCoroutine(FadeMenu()); }
         }
         else if (highlightedObject != null && highlightedObject != pickedupObject)
@@ -120,6 +119,7 @@ public class PickUp : MonoBehaviour
     {
         // Highlights the raycast object
         materials = newObject.GetComponent<Renderer>().materials.ToList();
+        if (newObject.tag == "Selectable") { materials = newObject.GetComponent<SpriteRenderer>().materials.ToList(); }
 
         foreach (var material in materials)
         {

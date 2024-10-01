@@ -15,7 +15,7 @@ public class ItemSpot : MonoBehaviour
         instructions = GetComponentInChildren<TMP_Text>();
     }
 
-    private void OnTriggerEnter(Collider collision)
+    private void OnCollisionEnter(Collision collision)
     {
         print(collision.gameObject.name);
         if (collision.gameObject.tag == "Selectable" && collision.gameObject.name == objectName)
@@ -25,7 +25,7 @@ public class ItemSpot : MonoBehaviour
             else { global.WinCondition(); } // has collected all the animals
         }
     }
-    private void OnTriggerExit(Collider collision)
+    private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.name == objectName)
         {
