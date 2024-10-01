@@ -8,6 +8,7 @@ public class ItemSpot : MonoBehaviour
     [SerializeField] string objectName;
     [SerializeField] GameObject nextLocation;
     [SerializeField] TMP_Text instructions;
+    [SerializeField] Globals global;
 
     private void Start()
     {
@@ -20,8 +21,8 @@ public class ItemSpot : MonoBehaviour
         if (collision.collider.tag == "Selectable" && collision.collider.name == objectName)
         {
             instructions.gameObject.SetActive(false);
-            nextLocation.SetActive(true);
-            
+            if (nextLocation != null) { nextLocation.SetActive(true); }
+            else { global.WinCondition(); } // has collected all the animals
         }
     }
     private void OnCollisionExit(Collision collision)

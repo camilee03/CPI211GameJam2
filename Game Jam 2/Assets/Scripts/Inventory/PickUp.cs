@@ -44,7 +44,7 @@ public class PickUp : MonoBehaviour
         if (!canPickup)
         {
             pickedupObject.transform.position = Camera.main.transform.position + 
-                Camera.main.transform.forward * 2 + Camera.main.transform.right * 1;
+                Camera.main.transform.forward * 1 + Camera.main.transform.right * 1;
             pickedupObject.transform.rotation = Camera.main.transform.rotation;
         }
 
