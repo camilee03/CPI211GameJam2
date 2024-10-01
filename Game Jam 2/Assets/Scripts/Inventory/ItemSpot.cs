@@ -15,19 +15,19 @@ public class ItemSpot : MonoBehaviour
         instructions = GetComponentInChildren<TMP_Text>();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collision)
     {
-        print(collision.collider.gameObject.name);
-        if (collision.collider.tag == "Selectable" && collision.collider.name == objectName)
+        print(collision.gameObject.name);
+        if (collision.gameObject.tag == "Selectable" && collision.gameObject.name == objectName)
         {
             instructions.gameObject.SetActive(false);
             if (nextLocation != null) { nextLocation.SetActive(true); }
             else { global.WinCondition(); } // has collected all the animals
         }
     }
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider collision)
     {
-        if (collision.collider.name == objectName)
+        if (collision.gameObject.name == objectName)
         {
             instructions.gameObject.SetActive(true);
         }
