@@ -15,6 +15,7 @@ public class DemonManager : MonoBehaviour
     public Transform actualPlayerLocation;
     public Transform lastKnownPosition;
     [SerializeField] Globals globals;
+    [SerializeField] AudioSource demonAudio;
     [SerializeField] GameObject demonPointsParent;
     private List<GameObject> demonPoints = new List<GameObject>();
     [SerializeField] GameObject hiddenPointsParent;
@@ -52,6 +53,7 @@ public class DemonManager : MonoBehaviour
         if (demonTransform != null)
         {
             DemonMovement = demonTransform.GetComponent<DemonMovement>();
+            demonAudio = demonTransform.GetComponent<AudioSource>();
         }
         else
         {
@@ -225,6 +227,8 @@ public class DemonManager : MonoBehaviour
                     if (wandering) //reset the wander points when initially spotting a player (prevent reduntant clears)
                     {
                         resetWanderPointsLeft();
+                        //play the spooky sounds
+                        demonAudio.Play();
                     }
                     wandering = false;
                     Debug.Log("Found player - Updating target position");
