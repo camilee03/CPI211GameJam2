@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class AnimalSpawn : MonoBehaviour
 {
-    [SerializeField] Transform[] animalLocations;
+    [SerializeField] List<Transform> animalLocations;
+    [SerializeField] List<Transform> animalLocationsALT;
+    [SerializeField] GameObject animalLocationsParent;
     [SerializeField] GameObject[] animalObjects;
 
     private void Start()
     {
-        foreach (GameObject animal in animalObjects) {  SpawnAnimal(animal); }
+        foreach (Transform t in animalLocationsParent.transform)
+        {
+            animalLocationsALT.Add(t);
+        }
+
+        foreach (GameObject animal in animalObjects) {
+            Debug.Log("Animal Locations Count: " + animalLocationsALT.Count);
+            Debug.Log("Animal Objects Count: " + animalObjects.Length);
+            SpawnAnimal(animal); 
+        }
     }
     public void SpawnAnimal(GameObject animal) {
-        int spawnLocation = Random.Range(0, animalLocations.Length);
+        int spawnLocation = Random.Range(0, animalLocationsALT.Count);
 
-        animal.transform.position =  animalLocations[spawnLocation].position;
+        animal.transform.position =  animalLocationsALT[spawnLocation].position;
     }
 }
