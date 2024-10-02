@@ -20,6 +20,9 @@ public class ItemSpot : MonoBehaviour
         print(collision.gameObject.name);
         if (collision.gameObject.tag == "Selectable" && collision.gameObject.name == objectName)
         {
+            Rigidbody animalRb = collision.collider.GetComponent<Rigidbody>();
+            animalRb.isKinematic = true;   
+
             instructions.gameObject.SetActive(false);
             if (nextLocation != null) { nextLocation.SetActive(true); }
             else { global.WinCondition(); } // has collected all the animals
